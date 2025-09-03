@@ -73,11 +73,7 @@ PVOID FetchLocalNtdllBaseAddress() {
 BOOL ReplaceNtdllTxtSection(IN PVOID pUnhookedNtdll) {
 
 	PVOID				pLocalNtdll = (PVOID)FetchLocalNtdllBaseAddress();
-
-	printf("\t[i] 'Hooked' Ntdll Base Address : 0x%p \n\t[i] 'Unhooked' Ntdll Base Address : 0x%p \n", pLocalNtdll, pUnhookedNtdll);
-	printf("[#] Press <Enter> To Continue ... ");
-	getchar();
-
+	
 	// getting the dos header
 	PIMAGE_DOS_HEADER	pLocalDosHdr = (PIMAGE_DOS_HEADER)pLocalNtdll;
 	if (pLocalDosHdr && pLocalDosHdr->e_magic != IMAGE_DOS_SIGNATURE)
@@ -109,13 +105,6 @@ BOOL ReplaceNtdllTxtSection(IN PVOID pUnhookedNtdll) {
 		}
 	}
 
-	//---------------------------------------------------------------------------------------------------------------------------
-
-	printf("\t[i] 'Hooked' Ntdll Text Section Address : 0x%p \n\t[i] 'Unhooked' Ntdll Text Section Address : 0x%p \n\t[i] Text Section Size : %d \n", pLocalNtdllTxt, pRemoteNtdllTxt, sNtdllTxtSize);
-	printf("[#] Press <Enter> To Continue ... ");
-	getchar();
-
-	// small check to verify that all the required information is retrieved
 	if (!pLocalNtdllTxt || !pRemoteNtdllTxt || !sNtdllTxtSize)
 		return FALSE;
 
@@ -123,9 +112,6 @@ BOOL ReplaceNtdllTxtSection(IN PVOID pUnhookedNtdll) {
 	if (*(ULONG*)pLocalNtdllTxt != *(ULONG*)pRemoteNtdllTxt)
 		return FALSE;
 
-	//---------------------------------------------------------------------------------------------------------------------------
-
-	printf("[i] Replacing The Text Section ... ");
 	DWORD dwOldProtection = NULL;
 
 	// making the text section writable and executable
@@ -142,8 +128,6 @@ BOOL ReplaceNtdllTxtSection(IN PVOID pUnhookedNtdll) {
 		printf("[!] VirtualProtect [2] Failed With Error : %d \n", GetLastError());
 		return FALSE;
 	}
-
-	printf("[+] DONE !\n");
 
 	return TRUE;
 }
